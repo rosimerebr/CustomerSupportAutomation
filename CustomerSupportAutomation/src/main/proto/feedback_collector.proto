@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option java_package = "com.example.feedback";
+option java_outer_classname = "FeedbackCollectorProto";
+
+package feedback;
+
+message FeedbackRequest {
+  string feedback_text = 1;
+}
+
+message FeedbackSummary {
+  int32 total_feedbacks = 1;
+  float average_sentiment_score = 2;
+  int32 negative_count = 3;
+  int32 positive_count = 4;
+}
+
+service FeedbackCollectorService {
+  rpc SubmitFeedbacks (stream FeedbackRequest) returns (FeedbackSummary);
+}
+

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option java_package = "com.example.sentiment";
+option java_outer_classname = "SentimentAnalyzerProto";
+
+package sentiment;
+
+message TextRequest {
+  string text = 1;
+}
+
+message SentimentResponse {
+  string sentiment = 1; // e.g., "positive", "neutral", "negative"
+  float score = 2;      // Confidence score
+  string ticket_id = 3; // Optional: to link to an alert
+}
+
+service SentimentAnalyzerService {
+  rpc AnalyzeText (TextRequest) returns (SentimentResponse);
+  rpc StreamLiveSentiment (TextRequest) returns (stream SentimentResponse);
+}
+

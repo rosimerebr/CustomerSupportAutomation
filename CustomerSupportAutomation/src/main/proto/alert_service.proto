@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_package = "com.example.alert";
+option java_outer_classname = "AlertServiceProto";
+
+package alert;
+
+message AlertRequest {
+  string ticket_id = 1;
+  string urgency = 2; // e.g., "critical", "medium", "low"
+  string sentiment = 3;
+  string message = 4;
+}
+
+message AlertResponse {
+  string status = 1;     // e.g., "sent", "failed"
+  string timestamp = 2;  // e.g., ISO-8601 format
+}
+
+service AlertService {
+  rpc AlertChannel (stream AlertRequest) returns (stream AlertResponse);
+}
+
