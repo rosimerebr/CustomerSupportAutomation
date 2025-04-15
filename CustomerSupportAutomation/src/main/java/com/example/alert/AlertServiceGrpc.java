@@ -1,8 +1,18 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package com.example.alert;
+
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
 
 /**
+ * Classe gerada pelo compilador do gRPC.
+ * Aqui definimos os serviços e a lógica de erro.
  */
 @javax.annotation.Generated(
     value = "by gRPC proto compiler (version 1.52.1)",
@@ -47,7 +57,7 @@ public final class AlertServiceGrpc {
   }
 
   /**
-   * Creates a new async stub that supports all call types for the service
+   * Cria um novo stub assíncrono que suporta todos os tipos de chamada para o serviço.
    */
   public static AlertServiceStub newStub(io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<AlertServiceStub> factory =
@@ -61,7 +71,7 @@ public final class AlertServiceGrpc {
   }
 
   /**
-   * Creates a new blocking-style stub that supports unary and streaming output calls on the service
+   * Cria um novo stub de bloqueio que suporta chamadas unárias e streaming.
    */
   public static AlertServiceBlockingStub newBlockingStub(
       io.grpc.Channel channel) {
@@ -76,7 +86,7 @@ public final class AlertServiceGrpc {
   }
 
   /**
-   * Creates a new ListenableFuture-style stub that supports unary calls on the service
+   * Cria um novo stub baseado em ListenableFuture que suporta chamadas unárias.
    */
   public static AlertServiceFutureStub newFutureStub(
       io.grpc.Channel channel) {
@@ -91,14 +101,55 @@ public final class AlertServiceGrpc {
   }
 
   /**
+   * Implementação do serviço AlertService.
+   * Define o método alertChannel com tratamento de erros.
    */
   public static abstract class AlertServiceImplBase implements io.grpc.BindableService {
 
     /**
+     * Implementação do método alertChannel com o tratamento de erros.
      */
     public io.grpc.stub.StreamObserver<com.example.alert.AlertServiceProto.AlertRequest> alertChannel(
         io.grpc.stub.StreamObserver<com.example.alert.AlertServiceProto.AlertResponse> responseObserver) {
-      return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getAlertChannelMethod(), responseObserver);
+
+      return new io.grpc.stub.StreamObserver<com.example.alert.AlertServiceProto.AlertRequest>() {
+
+          @Override
+          public void onNext(com.example.alert.AlertServiceProto.AlertRequest request) {
+              try {
+                  // Validar a mensagem de alerta
+                  if (request.getAlertMessage() == null || request.getAlertMessage().isEmpty()) {
+                      throw new IllegalArgumentException("Alert message cannot be empty");
+                  }
+
+                  // Processar o alerta e enviar a resposta
+                  com.example.alert.AlertServiceProto.AlertResponse response = 
+                      com.example.alert.AlertServiceProto.AlertResponse.newBuilder()
+                      .setAlertMessage("Alert processed successfully")
+                      .build();
+                  responseObserver.onNext(response);  // Envia a resposta para o cliente
+
+              } catch (IllegalArgumentException e) {
+                  // Envia erro 400 (Argumento inválido) se a mensagem de alerta for inválida
+                  responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("Invalid alert message: " + e.getMessage()).asRuntimeException());
+              } catch (Exception e) {
+                  // Envia erro 500 (Erro interno) para problemas internos
+                  responseObserver.onError(Status.INTERNAL.withDescription("Internal error while processing alert: " + e.getMessage()).asRuntimeException());
+              }
+          }
+
+          @Override
+          public void onError(Throwable t) {
+              // Envia erro 500 (Erro interno) caso haja falha na comunicação
+              responseObserver.onError(Status.INTERNAL.withDescription("Error in alert communication: " + t.getMessage()).asRuntimeException());
+          }
+
+          @Override
+          public void onCompleted() {
+              // Marca o fluxo como concluído
+              responseObserver.onCompleted();
+          }
+      };
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -111,59 +162,6 @@ public final class AlertServiceGrpc {
                 com.example.alert.AlertServiceProto.AlertResponse>(
                   this, METHODID_ALERT_CHANNEL)))
           .build();
-    }
-  }
-
-  /**
-   */
-  public static final class AlertServiceStub extends io.grpc.stub.AbstractAsyncStub<AlertServiceStub> {
-    private AlertServiceStub(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-      super(channel, callOptions);
-    }
-
-    @java.lang.Override
-    protected AlertServiceStub build(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-      return new AlertServiceStub(channel, callOptions);
-    }
-
-    /**
-     */
-    public io.grpc.stub.StreamObserver<com.example.alert.AlertServiceProto.AlertRequest> alertChannel(
-        io.grpc.stub.StreamObserver<com.example.alert.AlertServiceProto.AlertResponse> responseObserver) {
-      return io.grpc.stub.ClientCalls.asyncBidiStreamingCall(
-          getChannel().newCall(getAlertChannelMethod(), getCallOptions()), responseObserver);
-    }
-  }
-
-  /**
-   */
-  public static final class AlertServiceBlockingStub extends io.grpc.stub.AbstractBlockingStub<AlertServiceBlockingStub> {
-    private AlertServiceBlockingStub(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-      super(channel, callOptions);
-    }
-
-    @java.lang.Override
-    protected AlertServiceBlockingStub build(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-      return new AlertServiceBlockingStub(channel, callOptions);
-    }
-  }
-
-  /**
-   */
-  public static final class AlertServiceFutureStub extends io.grpc.stub.AbstractFutureStub<AlertServiceFutureStub> {
-    private AlertServiceFutureStub(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-      super(channel, callOptions);
-    }
-
-    @java.lang.Override
-    protected AlertServiceFutureStub build(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-      return new AlertServiceFutureStub(channel, callOptions);
     }
   }
 
@@ -257,4 +255,10 @@ public final class AlertServiceGrpc {
     }
     return result;
   }
+
+    private static class AlertServiceStub {
+
+        public AlertServiceStub() {
+        }
+    }
 }

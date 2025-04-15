@@ -110,25 +110,25 @@
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.6.1</version>
                 <configuration>
-                    <clearOutputDirectory>true</clearOutputDirectory>  <!-- Limpa os arquivos antigos -->
+                    <clearOutputDirectory>true</clearOutputDirectory>  <!-- Clean up old files -->
                     <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
                 </configuration>
                 <executions>
-                    <!-- Execução para compilar as classes Protobuf -->
+                    <!-- Running to compile Protobuf classes -->
                     <execution>
                         <id>protobuf-compile</id>
                         <goals>
                             <goal>compile</goal>
                         </goals>
                         <configuration>
-                            <protoSourceRoot>src/main/proto</protoSourceRoot>  <!-- Caminho dos arquivos .proto -->
+                            <protoSourceRoot>src/main/proto</protoSourceRoot>  <!-- Path to .proto files -->
                             <outputDirectory>${project.build.directory}/generated-sources/protobuf/java</outputDirectory>  <!-- Diretório único de saída -->
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- Adiciona fontes geradas ao caminho de compilação -->
+            <!-- Add generated sources to build path -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -149,13 +149,13 @@
                 </executions>
             </plugin>
 
-            <!-- Plugin do compilador Java -->
+            <!-- Java Compiler Plugin-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-                    <release>8</release> <!-- Usando 'release' em vez de 'source' e 'target' -->
+                    <release>8</release> <!-- Using 'release' instead of 'source' and 'target' -->
                 </configuration>
             </plugin>
         </plugins>

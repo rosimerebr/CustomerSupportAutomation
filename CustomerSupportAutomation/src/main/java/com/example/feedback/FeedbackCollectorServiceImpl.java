@@ -6,54 +6,54 @@ package com.example.feedback;
 
 import io.grpc.stub.StreamObserver;
 import com.example.feedback.FeedbackCollectorProto.*;
+import io.grpc.Status;
 
 public class FeedbackCollectorServiceImpl extends FeedbackCollectorServiceGrpc.FeedbackCollectorServiceImplBase {
 
     @Override
     public StreamObserver<FeedbackRequest> submitFeedbacks(StreamObserver<FeedbackSummary> responseObserver) {
-        // Usando variáveis imutáveis para as variáveis locais
-        final int[] totalFeedbacks = {0};  // Usando array para simular variáveis mutáveis em uma classe final
+        final int[] totalFeedbacks = {0};
         final int[] positiveCount = {0};
         final int[] negativeCount = {0};
         final float[] sentimentScore = {0.0f};
 
-        // Processando os feedbacks do cliente
         return new StreamObserver<FeedbackRequest>() {
 
             @Override
             public void onNext(FeedbackRequest feedback) {
-                // Lógica para processar cada feedback
-                totalFeedbacks[0]++;
-                // Exemplo de lógica para determinar se o feedback é positivo ou negativo
-                if (feedback.getFeedbackText().contains("happy")) {
-                    positiveCount[0]++;
-                } else {
-                    negativeCount[0]++;
+                try {
+                    totalFeedbacks[0]++;
+                    if (feedback.getFeedbackText().contains("happy")) {
+                        positiveCount[0]++;
+                    } else {
+                        negativeCount[0]++;
+                    }
+                } catch (Exception e) {
+                    responseObserver.onError(Status.INTERNAL.withDescription("Error processing feedback: " + e.getMessage()).asRuntimeException());
                 }
             }
 
             @Override
             public void onError(Throwable t) {
-                // Se ocorrer algum erro no stream
-                System.err.println("Erro no fluxo de feedbacks: " + t.getMessage());
+                responseObserver.onError(Status.INTERNAL.withDescription("Error in feedback stream: " + t.getMessage()).asRuntimeException());
             }
 
             @Override
             public void onCompleted() {
-                // Após o término do stream, calcular o resultado final
-                sentimentScore[0] = 0.75f; // Exemplo fictício de pontuação média
+                try {
+                    sentimentScore[0] = 0.75f; // Fictional example of average score
+                    FeedbackSummary summary = FeedbackSummary.newBuilder()
+                            .setTotalFeedbacks(totalFeedbacks[0])
+                            .setNegativeCount(negativeCount[0])
+                            .setPositiveCount(positiveCount[0])
+                            .setAverageSentimentScore(sentimentScore[0])
+                            .build();
 
-                // Criar o resumo dos feedbacks
-                FeedbackSummary summary = FeedbackSummary.newBuilder()
-                        .setTotalFeedbacks(totalFeedbacks[0])
-                        .setNegativeCount(negativeCount[0])
-                        .setPositiveCount(positiveCount[0])
-                        .setAverageSentimentScore(sentimentScore[0])
-                        .build();
-
-                // Enviar o resumo para o cliente
-                responseObserver.onNext(summary);
-                responseObserver.onCompleted(); // Finaliza a resposta do servidor
+                    responseObserver.onNext(summary);
+                    responseObserver.onCompleted();
+                } catch (Exception e) {
+                    responseObserver.onError(Status.INTERNAL.withDescription("Error generating feedback summary: " + e.getMessage()).asRuntimeException());
+                }
             }
         };
     }
