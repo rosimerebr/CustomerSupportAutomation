@@ -9,217 +9,240 @@ import sentimentanalyzer.FeedbackCollectorProto.*;
 import sentimentanalyzer.SentimentAnalyzerProto.*;
 import io.grpc.stub.*;
 
-
 public class SentimentAnalyzerUI extends JFrame {
     // gRPC Channel and Stubs
     private final ManagedChannel channel;
-    private final SentimentAnalyzerServiceGrpc.SentimentAnalyzerServiceBlockingStub sentimentAnalyzerBlockingStub;
+    private final SentimentAnalyzerServiceGrpc.SentimentAnalyzerServiceStub sentimentAnalyzerStub;  // Async stub
     private final FeedbackCollectorServiceGrpc.FeedbackCollectorServiceStub feedbackCollectorStub;
 
-    // Components for the Feedback Collector
-    private JTextArea feedbackTextArea;
-    private JButton submitFeedbackButton;
-    private JTextArea feedbackSummaryArea;
-
-    // Components for the Sentiment Analyzer
-    private JTextArea textToAnalyzeArea;
-    private JButton analyzeSentimentButton;
-    private JTextArea sentimentResultArea;
-
-    // Components for the Live Sentiment Stream
-    private JTextArea liveSentimentArea;
-    private JButton startLiveSentimentButton;
+    // UI Components
+    private JTextArea feedbackTextArea, feedbackSummaryArea, textToAnalyzeArea, sentimentResultArea, liveSentimentArea;
+    private JButton submitFeedbackButton, cleanFeedbackButton, analyzeSentimentButton, cleanSentimentButton, startLiveSentimentButton, cleanLiveSentimentButton;
 
     public SentimentAnalyzerUI() {
         // Initialize gRPC channel and stubs
         channel = ManagedChannelBuilder.forAddress("localhost", 8080)
                 .usePlaintext()
                 .build();
-
-        sentimentAnalyzerBlockingStub = SentimentAnalyzerServiceGrpc.newBlockingStub(channel);
+        sentimentAnalyzerStub = SentimentAnalyzerServiceGrpc.newStub(channel);
         feedbackCollectorStub = FeedbackCollectorServiceGrpc.newStub(channel);
 
-        // Set up the JFrame
+        // Set up JFrame
         setTitle("Sentiment Analyzer & Feedback Collector");
         setSize(600, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Initialize the sections of the interface
+        // Initialize UI sections
         createFeedbackSection();
         createSentimentSection();
         createLiveSentimentSection();
 
-        // Make the window visible
         setVisible(true);
     }
 
-    // Create the Feedback Collector section
+    // --- Feedback Section ---
     private void createFeedbackSection() {
-        JPanel feedbackPanel = new JPanel();
-        feedbackPanel.setLayout(new BoxLayout(feedbackPanel, BoxLayout.Y_AXIS));
-        feedbackPanel.setBorder(BorderFactory.createTitledBorder("Feedback Collector"));
+        /*JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createTitledBorder("Feedback Collector"));
 
-        // Initialize components for the Feedback Collector
         feedbackTextArea = new JTextArea(5, 20);
         submitFeedbackButton = new JButton("Submit Feedback");
         feedbackSummaryArea = new JTextArea(5, 20);
         feedbackSummaryArea.setEditable(false);
+        cleanFeedbackButton = new JButton("Clear");
 
-        // Action listener for the "Submit Feedback" button
-        submitFeedbackButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                submitFeedback();
-            }
-        });
+        submitFeedbackButton.addActionListener(e -> submitFeedback());
+        cleanFeedbackButton.addActionListener(e -> clearFields("feedback"));
 
-        // Add components to the panel
-        feedbackPanel.add(new JLabel("Feedback Text:"));
-        feedbackPanel.add(new JScrollPane(feedbackTextArea));
-        feedbackPanel.add(submitFeedbackButton);
-        feedbackPanel.add(new JScrollPane(feedbackSummaryArea));
+        panel.add(new JLabel("Feedback Text:"));
+        panel.add(new JScrollPane(feedbackTextArea));
+        panel.add(submitFeedbackButton);
+        panel.add(cleanFeedbackButton);
+        panel.add(new JScrollPane(feedbackSummaryArea));
 
-        // Add the panel to the frame
-        add(feedbackPanel, BorderLayout.NORTH);
+        add(panel, BorderLayout.NORTH);*/
     }
 
-    // Submit feedback to the server via gRPC
     private void submitFeedback() {
-        StreamObserver<FeedbackRequest> feedbackObserver = feedbackCollectorStub.submitFeedbacks(new StreamObserver<FeedbackSummary>() {
-            @Override
-            public void onNext(FeedbackSummary value) {
-                // Show feedback summary in the UI
-                feedbackSummaryArea.setText("Total Feedbacks: " + value.getTotalFeedbacks() + "\n" +
-                        "Positive: " + value.getPositiveCount() + "\n" +
-                        "Negative: " + value.getNegativeCount() + "\n" +
-                        "Average Sentiment: " + value.getAverageSentimentScore());
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                feedbackSummaryArea.setText("Error submitting feedback: " + t.getMessage());
-            }
-
-            @Override
-            public void onCompleted() {
-                // No action needed when feedback submission is completed
-            }
-        });
-
-        // Create the feedback request and send it
-        String feedbackText = feedbackTextArea.getText();
-        FeedbackRequest request = FeedbackRequest.newBuilder().setFeedbackText(feedbackText).build();
-        feedbackObserver.onNext(request);  // Send feedback
-        feedbackObserver.onCompleted();  // Close the stream
-    }
-
-    // Create the Sentiment Analyzer section
-    private void createSentimentSection() {
-        JPanel sentimentPanel = new JPanel();
-        sentimentPanel.setLayout(new BoxLayout(sentimentPanel, BoxLayout.Y_AXIS));
-        sentimentPanel.setBorder(BorderFactory.createTitledBorder("Sentiment Analyzer"));
-
-        // Initialize components for the Sentiment Analyzer
-        textToAnalyzeArea = new JTextArea(5, 20);
-        analyzeSentimentButton = new JButton("Analyze Sentiment");
-        sentimentResultArea = new JTextArea(5, 20);
-        sentimentResultArea.setEditable(false);
-
-        // Action listener for the "Analyze Sentiment" button
-        analyzeSentimentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                analyzeSentiment();
-            }
-        });
-
-        // Add components to the panel
-        sentimentPanel.add(new JLabel("Text to Analyze:"));
-        sentimentPanel.add(new JScrollPane(textToAnalyzeArea));
-        sentimentPanel.add(analyzeSentimentButton);
-        sentimentPanel.add(new JScrollPane(sentimentResultArea));
-
-        // Add the panel to the frame
-        add(sentimentPanel, BorderLayout.CENTER);
-    }
-
-    // Analyze sentiment of the entered text using gRPC
-    private void analyzeSentiment() {
-        String text = textToAnalyzeArea.getText();
-        TextRequest request = TextRequest.newBuilder().setText(text).build();
-
-        // Send request and receive response
-        SentimentResponse response = sentimentAnalyzerBlockingStub.analyzeText(request);
-
-        // Show the result in the UI
-        sentimentResultArea.setText("Sentiment: " + response.getSentiment() + "\nScore: " + response.getScore());
-        JOptionPane.showMessageDialog(this, "Sentiment: " + response.getSentiment(), "Sentiment Analysis Result", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    // Create the Live Sentiment Stream section
-    private void createLiveSentimentSection() {
-        JPanel liveSentimentPanel = new JPanel();
-        liveSentimentPanel.setLayout(new BoxLayout(liveSentimentPanel, BoxLayout.Y_AXIS));
-        liveSentimentPanel.setBorder(BorderFactory.createTitledBorder("Live Sentiment Stream"));
-
-        // Initialize components for live sentiment streaming
-        liveSentimentArea = new JTextArea(5, 20);
-        liveSentimentArea.setEditable(false);
-        startLiveSentimentButton = new JButton("Start Live Sentiment Stream");
-
-        // Action listener for the "Start Live Sentiment Stream" button
-        startLiveSentimentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                startLiveSentimentStream();
-            }
-        });
-
-        // Add components to the panel
-        liveSentimentPanel.add(startLiveSentimentButton);
-        liveSentimentPanel.add(new JScrollPane(liveSentimentArea));
-
-        // Add the panel to the frame
-        add(liveSentimentPanel, BorderLayout.SOUTH);
-    }
-
-    // Start live sentiment stream using gRPC
-// Start live sentiment stream using gRPC
-    private void startLiveSentimentStream() {
-        // Create the StreamObserver for sending TextRequest to the gRPC service
-        /*StreamObserver<TextRequest> requestObserver = sentimentAnalyzerBlockingStub
-                .streamLiveSentiment(new StreamObserver<TextRequest>() {
-
-                    public void onNext(SentimentResponse value) {
-                        // Display live sentiment updates in the text area
-                        liveSentimentArea.setText("Live Sentiment: " + value.getSentiment() + "\nScore: " + value.getScore());
+        /*StreamObserver<FeedbackRequest> requestObserver = feedbackCollectorStub.submitFeedbacks(
+                new StreamObserver<FeedbackSummary>() {
+                    @Override
+                    public void onNext(FeedbackSummary summary) {
+                        SwingUtilities.invokeLater(() -> {
+                            feedbackSummaryArea.setText(
+                                    "Total Feedbacks: " + summary.getTotalFeedbacks() + "\n" +
+                                            "Positive: " + summary.getPositiveCount() + "\n" +
+                                            "Negative: " + summary.getNegativeCount() + "\n" +
+                                            "Avg. Score: " + summary.getAverageSentimentScore()
+                            );
+                        });
                     }
 
                     @Override
                     public void onError(Throwable t) {
-                        liveSentimentArea.setText("Error in live sentiment stream: " + t.getMessage());
+                        SwingUtilities.invokeLater(() -> {
+                            feedbackSummaryArea.setText("Error: " + t.getMessage());
+                        });
                     }
 
                     @Override
                     public void onCompleted() {
-                        // Mark the end of the stream
+                        // Optional: Log completion
                     }
-                });
+                }
+        );
 
-        // Create the TextRequest to send the entered text
-        String text = textToAnalyzeArea.getText();
-        TextRequest request = TextRequest.newBuilder().setText(text).build();
-
-        // Send the request to start streaming
-        requestObserver.onNext(request);*/
-
-        // Optionally, you could keep the stream open for continuous updates.
-        // You might want to add a loop here to simulate continuous sending, or just close it after the initial text.
-        // To end the stream, we would call requestObserver.onCompleted();
+        FeedbackRequest request = FeedbackRequest.newBuilder()
+                .setFeedbackText(feedbackTextArea.getText())
+                .build();
+        requestObserver.onNext(request);
+        requestObserver.onCompleted();*/
     }
 
-    // Main method to launch the application
+    // --- Sentiment Analysis Section ---
+    private void createSentimentSection() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createTitledBorder("Sentiment Analyzer"));
+
+        textToAnalyzeArea = new JTextArea(5, 20);
+        analyzeSentimentButton = new JButton("Analyze Sentiment");
+        sentimentResultArea = new JTextArea(5, 20);
+        sentimentResultArea.setEditable(false);
+        cleanSentimentButton = new JButton("Clear");
+
+        analyzeSentimentButton.addActionListener(e -> analyzeSentiment());
+        cleanSentimentButton.addActionListener(e -> clearFields("sentiment"));
+
+        panel.add(new JLabel("Text to Analyze:"));
+        panel.add(new JScrollPane(textToAnalyzeArea));
+        panel.add(analyzeSentimentButton);
+        panel.add(cleanSentimentButton);
+        panel.add(new JScrollPane(sentimentResultArea));
+
+        add(panel, BorderLayout.CENTER);
+    }
+
+    private void analyzeSentiment() {
+        String text = textToAnalyzeArea.getText();
+        if (text.isEmpty()) {
+            sentimentResultArea.setText("Please enter text to analyze!");
+            return;
+        }
+
+        TextRequest request = TextRequest.newBuilder()
+                .setText(text)
+                .build();
+
+        sentimentAnalyzerStub.analyzeText(request, new StreamObserver<SentimentResponse>() {
+            @Override
+            public void onNext(SentimentResponse response) {
+                SwingUtilities.invokeLater(() -> {
+                    sentimentResultArea.setText(
+                            "Sentiment: " + response.getSentiment() +
+                                    "\nScore: " + response.getScore()
+                    );
+                });
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                SwingUtilities.invokeLater(() -> {
+                    sentimentResultArea.setText("Error: " + t.getMessage());
+                    JOptionPane.showMessageDialog(
+                            SentimentAnalyzerUI.this,
+                            "Analysis failed: " + t.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                });
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("Analysis completed.");
+            }
+        });
+    }
+
+    // --- Live Sentiment Section ---
+    private void createLiveSentimentSection() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createTitledBorder("Live Sentiment Stream"));
+
+        liveSentimentArea = new JTextArea(5, 20);
+        liveSentimentArea.setEditable(false);
+        startLiveSentimentButton = new JButton("Start Live Stream");
+        cleanLiveSentimentButton = new JButton("Clear");
+
+        startLiveSentimentButton.addActionListener(e -> startLiveSentimentStream());
+        cleanLiveSentimentButton.addActionListener(e -> clearFields("live"));
+
+        panel.add(startLiveSentimentButton);
+        panel.add(cleanLiveSentimentButton);
+        panel.add(new JScrollPane(liveSentimentArea));
+
+        add(panel, BorderLayout.SOUTH);
+    }
+
+    private void startLiveSentimentStream() {
+        StreamObserver<SentimentResponse> responseObserver = new StreamObserver<SentimentResponse>() {
+            @Override
+            public void onNext(SentimentResponse response) {
+                SwingUtilities.invokeLater(() -> {
+                    liveSentimentArea.setText(
+                            "Live Sentiment: " + response.getSentiment() +
+                                    "\nScore: " + response.getScore()
+                    );
+                });
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                SwingUtilities.invokeLater(() -> {
+                    liveSentimentArea.setText("Stream error: " + t.getMessage());
+                });
+            }
+
+            @Override
+            public void onCompleted() {
+                SwingUtilities.invokeLater(() -> {
+                    liveSentimentArea.append("\nStream ended.");
+                });
+            }
+        };
+
+       // StreamObserver<TextRequest> requestObserver = sentimentAnalyzerStub
+       //         .streamLiveSentiment(responseObserver);
+
+
+      //  TextRequest request = TextRequest.newBuilder()
+       //         .setText(textToAnalyzeArea.getText())
+       //         .build();
+       // requestObserver.onNext(request);
+      //  requestObserver.onCompleted();
+
+    }
+    // --- Helper Methods ---
+    private void clearFields(String section) {
+        switch (section) {
+            case "feedback":
+                feedbackTextArea.setText("");
+                feedbackSummaryArea.setText("");
+                break;
+            case "sentiment":
+                textToAnalyzeArea.setText("");
+                sentimentResultArea.setText("");
+                break;
+            case "live":
+                liveSentimentArea.setText("");
+                break;
+        }
+    }
+
     public static void main(String[] args) {
         new SentimentAnalyzerUI();
     }
