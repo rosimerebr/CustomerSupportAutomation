@@ -10,6 +10,7 @@ message AlertRequest {
   string urgency = 2; // e.g., "critical", "medium", "low"
   string sentiment = 3;
   string message = 4;
+  string user_id = 5;
 }
 
 message AlertResponse {
