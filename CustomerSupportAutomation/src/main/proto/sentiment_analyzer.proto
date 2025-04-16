@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-option java_package = "com.example.sentiment";
+// option java_package = "com.example.sentiment";
 option java_outer_classname = "SentimentAnalyzerProto";
 
-package sentiment;
+package sentimentanalyzer;
 
 message TextRequest {
   string text = 1;

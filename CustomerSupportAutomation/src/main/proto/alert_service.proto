@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-option java_package = "com.example.alert";
+// option java_package = "com.example.alert";
 option java_outer_classname = "AlertServiceProto";
 
-package alert;
+package sentimentanalyzer;
 
 message AlertRequest {
   string ticket_id = 1;

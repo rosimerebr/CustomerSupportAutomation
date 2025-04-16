@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-option java_package = "com.example.feedback";
+// option java_package = "com.example.feedback";
 option java_outer_classname = "FeedbackCollectorProto";
 
-package feedback;
+package sentimentanalyzer;
 
 message FeedbackRequest {
   string feedback_text = 1;

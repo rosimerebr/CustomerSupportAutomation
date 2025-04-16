@@ -1,16 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.example.feedback;
 
+package sentimentanalyzer;
+
+import sentimentanalyzer.FeedbackCollectorServiceGrpc.*;
 import io.grpc.stub.StreamObserver;
-import com.example.feedback.FeedbackCollectorProto.*;
-import io.grpc.Status;
+import sentimentanalyzer.FeedbackCollectorProto.*;
+import io.grpc.*;
 
-public class FeedbackCollectorServiceImpl extends FeedbackCollectorServiceGrpc.FeedbackCollectorServiceImplBase {
+public class FeedbackCollectorServiceImpl extends FeedbackCollectorServiceImplBase {
 
-    @Override
     public StreamObserver<FeedbackRequest> submitFeedbacks(StreamObserver<FeedbackSummary> responseObserver) {
         final int[] totalFeedbacks = {0};
         final int[] positiveCount = {0};

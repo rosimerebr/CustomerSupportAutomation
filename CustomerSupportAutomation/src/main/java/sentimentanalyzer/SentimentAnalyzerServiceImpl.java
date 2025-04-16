@@ -2,16 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.sentiment;
+package sentimentanalyzer;
 
 import io.grpc.stub.StreamObserver;
-import com.example.sentiment.SentimentAnalyzerProto.*;
-import io.grpc.Status;
+import io.grpc.*;
+import sentimentanalyzer.SentimentAnalyzerProto.*;
 
 public class SentimentAnalyzerServiceImpl extends SentimentAnalyzerServiceGrpc.SentimentAnalyzerServiceImplBase {
 
-    @Override
-    public void analyzeText(TextRequest request, StreamObserver<SentimentResponse> responseObserver) {
+    public void analyzeText(TextRequest request, StreamObserver<SentimentAnalyzerProto.SentimentResponse> responseObserver) {
         try {
             // Validate the received text
             if (request.getText() == null || request.getText().isEmpty()) {
@@ -53,7 +52,6 @@ public class SentimentAnalyzerServiceImpl extends SentimentAnalyzerServiceGrpc.S
         }
     }
 
-    @Override
     public void streamLiveSentiment(TextRequest request, StreamObserver<SentimentResponse> responseObserver) {
         try {
             // Simulating the streaming of sentiment analysis updates in real-time
