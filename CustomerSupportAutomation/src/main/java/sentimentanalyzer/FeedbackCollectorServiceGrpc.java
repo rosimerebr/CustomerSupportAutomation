@@ -16,6 +16,9 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
+ * <pre>
+ * Serviço para coletar feedbacks e gerar/resetar resumo
+ * </pre>
  */
 @javax.annotation.Generated(
     value = "by gRPC proto compiler (version 1.15.0)",
@@ -27,36 +30,68 @@ public final class FeedbackCollectorServiceGrpc {
   public static final String SERVICE_NAME = "sentimentanalyzer.FeedbackCollectorService";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<sentimentanalyzer.FeedbackCollectorProto.FeedbackRequest,
-      sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary> getSubmitFeedbacksMethod;
+  private static volatile io.grpc.MethodDescriptor<sentimentanalyzer.FeedbackRequest,
+      sentimentanalyzer.FeedbackSummary> getSubmitFeedbacksMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "SubmitFeedbacks",
-      requestType = sentimentanalyzer.FeedbackCollectorProto.FeedbackRequest.class,
-      responseType = sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary.class,
+      requestType = sentimentanalyzer.FeedbackRequest.class,
+      responseType = sentimentanalyzer.FeedbackSummary.class,
       methodType = io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
-  public static io.grpc.MethodDescriptor<sentimentanalyzer.FeedbackCollectorProto.FeedbackRequest,
-      sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary> getSubmitFeedbacksMethod() {
-    io.grpc.MethodDescriptor<sentimentanalyzer.FeedbackCollectorProto.FeedbackRequest, sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary> getSubmitFeedbacksMethod;
+  public static io.grpc.MethodDescriptor<sentimentanalyzer.FeedbackRequest,
+      sentimentanalyzer.FeedbackSummary> getSubmitFeedbacksMethod() {
+    io.grpc.MethodDescriptor<sentimentanalyzer.FeedbackRequest, sentimentanalyzer.FeedbackSummary> getSubmitFeedbacksMethod;
     if ((getSubmitFeedbacksMethod = FeedbackCollectorServiceGrpc.getSubmitFeedbacksMethod) == null) {
       synchronized (FeedbackCollectorServiceGrpc.class) {
         if ((getSubmitFeedbacksMethod = FeedbackCollectorServiceGrpc.getSubmitFeedbacksMethod) == null) {
           FeedbackCollectorServiceGrpc.getSubmitFeedbacksMethod = getSubmitFeedbacksMethod = 
-              io.grpc.MethodDescriptor.<sentimentanalyzer.FeedbackCollectorProto.FeedbackRequest, sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary>newBuilder()
+              io.grpc.MethodDescriptor.<sentimentanalyzer.FeedbackRequest, sentimentanalyzer.FeedbackSummary>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
               .setFullMethodName(generateFullMethodName(
                   "sentimentanalyzer.FeedbackCollectorService", "SubmitFeedbacks"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  sentimentanalyzer.FeedbackCollectorProto.FeedbackRequest.getDefaultInstance()))
+                  sentimentanalyzer.FeedbackRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary.getDefaultInstance()))
+                  sentimentanalyzer.FeedbackSummary.getDefaultInstance()))
                   .setSchemaDescriptor(new FeedbackCollectorServiceMethodDescriptorSupplier("SubmitFeedbacks"))
                   .build();
           }
         }
      }
      return getSubmitFeedbacksMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      com.google.protobuf.BoolValue> getResetFeedbacksMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "ResetFeedbacks",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = com.google.protobuf.BoolValue.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      com.google.protobuf.BoolValue> getResetFeedbacksMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, com.google.protobuf.BoolValue> getResetFeedbacksMethod;
+    if ((getResetFeedbacksMethod = FeedbackCollectorServiceGrpc.getResetFeedbacksMethod) == null) {
+      synchronized (FeedbackCollectorServiceGrpc.class) {
+        if ((getResetFeedbacksMethod = FeedbackCollectorServiceGrpc.getResetFeedbacksMethod) == null) {
+          FeedbackCollectorServiceGrpc.getResetFeedbacksMethod = getResetFeedbacksMethod = 
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, com.google.protobuf.BoolValue>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(
+                  "sentimentanalyzer.FeedbackCollectorService", "ResetFeedbacks"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.BoolValue.getDefaultInstance()))
+                  .setSchemaDescriptor(new FeedbackCollectorServiceMethodDescriptorSupplier("ResetFeedbacks"))
+                  .build();
+          }
+        }
+     }
+     return getResetFeedbacksMethod;
   }
 
   /**
@@ -83,14 +118,30 @@ public final class FeedbackCollectorServiceGrpc {
   }
 
   /**
+   * <pre>
+   * Serviço para coletar feedbacks e gerar/resetar resumo
+   * </pre>
    */
   public static abstract class FeedbackCollectorServiceImplBase implements io.grpc.BindableService {
 
     /**
+     * <pre>
+     * Recebe múltiplos feedbacks via streaming e retorna um resumo
+     * </pre>
      */
-    public io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackCollectorProto.FeedbackRequest> submitFeedbacks(
-        io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary> responseObserver) {
+    public io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackRequest> submitFeedbacks(
+        io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackSummary> responseObserver) {
       return asyncUnimplementedStreamingCall(getSubmitFeedbacksMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Reseta o resumo armazenado no servidor
+     * </pre>
+     */
+    public void resetFeedbacks(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue> responseObserver) {
+      asyncUnimplementedUnaryCall(getResetFeedbacksMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -99,14 +150,24 @@ public final class FeedbackCollectorServiceGrpc {
             getSubmitFeedbacksMethod(),
             asyncClientStreamingCall(
               new MethodHandlers<
-                sentimentanalyzer.FeedbackCollectorProto.FeedbackRequest,
-                sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary>(
+                sentimentanalyzer.FeedbackRequest,
+                sentimentanalyzer.FeedbackSummary>(
                   this, METHODID_SUBMIT_FEEDBACKS)))
+          .addMethod(
+            getResetFeedbacksMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                com.google.protobuf.BoolValue>(
+                  this, METHODID_RESET_FEEDBACKS)))
           .build();
     }
   }
 
   /**
+   * <pre>
+   * Serviço para coletar feedbacks e gerar/resetar resumo
+   * </pre>
    */
   public static final class FeedbackCollectorServiceStub extends io.grpc.stub.AbstractStub<FeedbackCollectorServiceStub> {
     private FeedbackCollectorServiceStub(io.grpc.Channel channel) {
@@ -125,15 +186,32 @@ public final class FeedbackCollectorServiceGrpc {
     }
 
     /**
+     * <pre>
+     * Recebe múltiplos feedbacks via streaming e retorna um resumo
+     * </pre>
      */
-    public io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackCollectorProto.FeedbackRequest> submitFeedbacks(
-        io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary> responseObserver) {
+    public io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackRequest> submitFeedbacks(
+        io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackSummary> responseObserver) {
       return asyncClientStreamingCall(
           getChannel().newCall(getSubmitFeedbacksMethod(), getCallOptions()), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Reseta o resumo armazenado no servidor
+     * </pre>
+     */
+    public void resetFeedbacks(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getResetFeedbacksMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
   /**
+   * <pre>
+   * Serviço para coletar feedbacks e gerar/resetar resumo
+   * </pre>
    */
   public static final class FeedbackCollectorServiceBlockingStub extends io.grpc.stub.AbstractStub<FeedbackCollectorServiceBlockingStub> {
     private FeedbackCollectorServiceBlockingStub(io.grpc.Channel channel) {
@@ -150,9 +228,22 @@ public final class FeedbackCollectorServiceGrpc {
         io.grpc.CallOptions callOptions) {
       return new FeedbackCollectorServiceBlockingStub(channel, callOptions);
     }
+
+    /**
+     * <pre>
+     * Reseta o resumo armazenado no servidor
+     * </pre>
+     */
+    public com.google.protobuf.BoolValue resetFeedbacks(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getResetFeedbacksMethod(), getCallOptions(), request);
+    }
   }
 
   /**
+   * <pre>
+   * Serviço para coletar feedbacks e gerar/resetar resumo
+   * </pre>
    */
   public static final class FeedbackCollectorServiceFutureStub extends io.grpc.stub.AbstractStub<FeedbackCollectorServiceFutureStub> {
     private FeedbackCollectorServiceFutureStub(io.grpc.Channel channel) {
@@ -169,9 +260,21 @@ public final class FeedbackCollectorServiceGrpc {
         io.grpc.CallOptions callOptions) {
       return new FeedbackCollectorServiceFutureStub(channel, callOptions);
     }
+
+    /**
+     * <pre>
+     * Reseta o resumo armazenado no servidor
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.BoolValue> resetFeedbacks(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getResetFeedbacksMethod(), getCallOptions()), request);
+    }
   }
 
-  private static final int METHODID_SUBMIT_FEEDBACKS = 0;
+  private static final int METHODID_RESET_FEEDBACKS = 0;
+  private static final int METHODID_SUBMIT_FEEDBACKS = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -190,6 +293,10 @@ public final class FeedbackCollectorServiceGrpc {
     @java.lang.SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
+        case METHODID_RESET_FEEDBACKS:
+          serviceImpl.resetFeedbacks((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.BoolValue>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
@@ -202,7 +309,7 @@ public final class FeedbackCollectorServiceGrpc {
       switch (methodId) {
         case METHODID_SUBMIT_FEEDBACKS:
           return (io.grpc.stub.StreamObserver<Req>) serviceImpl.submitFeedbacks(
-              (io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackCollectorProto.FeedbackSummary>) responseObserver);
+              (io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackSummary>) responseObserver);
         default:
           throw new AssertionError();
       }
@@ -255,6 +362,7 @@ public final class FeedbackCollectorServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new FeedbackCollectorServiceFileDescriptorSupplier())
               .addMethod(getSubmitFeedbacksMethod())
+              .addMethod(getResetFeedbacksMethod())
               .build();
         }
       }
