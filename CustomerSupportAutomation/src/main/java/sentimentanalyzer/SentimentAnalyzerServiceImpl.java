@@ -5,11 +5,22 @@ import io.grpc.stub.StreamObserver;
 import sentimentanalyzer.SentimentAnalyzerProto.*;
 
 public class SentimentAnalyzerServiceImpl extends SentimentAnalyzerServiceGrpc.SentimentAnalyzerServiceImplBase {
+    // for security authentication
+    private final String API_KEY = "qP8nTZK5rLXbdVoqP8nTZK5rLXbdVo3EMAjR19CYs6WhNfFguev72IkcBytODmlxGJ3EMAjR19CYs6WhNfFguev72IkcBytODmlxGJ";
 
     @Override
     public void analyzeText(TextRequest request, StreamObserver<SentimentResponse> responseObserver) {
         try {
+
+            if (request.getApiKey().isEmpty() || !request.getApiKey().equals(API_KEY)) {
+                responseObserver.onError(Status.PERMISSION_DENIED
+                        .withDescription("API KEY is not valid.")
+                        .asRuntimeException());
+                return;
+            }
+
             // Validate the received text
+
             if (request.getText() == null || request.getText().isEmpty()) {
                 throw new IllegalArgumentException("Text cannot be empty");
             }
@@ -51,6 +62,12 @@ public class SentimentAnalyzerServiceImpl extends SentimentAnalyzerServiceGrpc.S
 
     @Override
     public void streamLiveSentiment(TextRequest request, StreamObserver<SentimentResponse> responseObserver) {
+        if (request.getApiKey().isEmpty() || !request.getApiKey().equals(API_KEY)) {
+            responseObserver.onError(Status.PERMISSION_DENIED
+                    .withDescription("API KEY is not valid.")
+                    .asRuntimeException());
+            return;
+        }
         try {
             // Simulating the streaming of sentiment analysis updates in real-time
             String[] sentiments = {"positive", "negative", "neutral"};

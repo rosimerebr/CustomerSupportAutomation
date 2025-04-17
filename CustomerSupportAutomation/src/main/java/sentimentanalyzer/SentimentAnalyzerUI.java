@@ -31,6 +31,9 @@ public class SentimentAnalyzerUI extends JFrame {
     // Logger for tracking application events
     private static final Logger logger = LoggerFactory.getLogger(SentimentAnalyzerUI.class);
 
+    // for security authentication
+    private final String API_KEY = "qP8nTZK5rLXbdVoqP8nTZK5rLXbdVo3EMAjR19CYs6WhNfFguev72IkcBytODmlxGJ3EMAjR19CYs6WhNfFguev72IkcBytODmlxGJ";
+
     // gRPC channel and service stubs
     private final ManagedChannel channel;
     private final SentimentAnalyzerServiceGrpc.SentimentAnalyzerServiceStub sentimentAnalyzerStub;
@@ -244,7 +247,7 @@ public class SentimentAnalyzerUI extends JFrame {
 
         // Call gRPC service for sentiment analysis
         sentimentAnalyzerStub.analyzeText(
-                TextRequest.newBuilder().setText(text).build(),
+                TextRequest.newBuilder().setText(text).setApiKey(API_KEY).build(),
                 new StreamObserver<SentimentResponse>() {
                     @Override
                     public void onNext(SentimentResponse response) {
@@ -439,6 +442,7 @@ public class SentimentAnalyzerUI extends JFrame {
      * Saves alert ticket to history file
      */
     private void saveTicketToHistory(int ticketId, String user, String sentiment, String message) {
+        logger.info("Saving ticket history to file.");
         try (PrintWriter out = new PrintWriter(new FileWriter("ticket_history.txt", true))) {
             out.printf("Ticket: T-%06d | User: %s | Sentiment: %s | Time: %s | Message: %s%n",
                     ticketId,

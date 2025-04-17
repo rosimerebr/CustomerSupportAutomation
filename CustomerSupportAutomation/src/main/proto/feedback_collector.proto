@@ -13,6 +13,7 @@ option java_outer_classname = "FeedbackCollectorProto";
 // Mensagem contendo o feedback individual
 message FeedbackRequest {
   string feedback_text = 1;
+  string api_key = 2;
 }
 
 // Resumo do feedback com estatísticas

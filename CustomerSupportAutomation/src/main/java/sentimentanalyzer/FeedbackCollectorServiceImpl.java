@@ -94,6 +94,7 @@ public class FeedbackCollectorServiceImpl extends FeedbackCollectorServiceGrpc.F
     /**
      * Resets internal state of feedback statistics.
      */
+
     @Override
     public void resetFeedbacks(Empty request, StreamObserver<BoolValue> responseObserver) {
         try {

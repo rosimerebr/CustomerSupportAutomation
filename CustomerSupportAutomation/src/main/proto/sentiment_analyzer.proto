@@ -13,6 +13,7 @@ service SentimentAnalyzerService {
 
 message TextRequest {
     string text = 1;
+    string api_key = 2;
 }
 
 message SentimentResponse {
