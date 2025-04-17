@@ -4,11 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import io.grpc.*;
 import sentimentanalyzer.AlertServiceProto.*;
+import sentimentanalyzer.FeedbackCollectorProto.*;
 import io.grpc.stub.*;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.prefs.Preferences;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.io.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +21,10 @@ public class SentimentAnalyzerUI extends JFrame {
     private final ManagedChannel channel;
     private final SentimentAnalyzerServiceGrpc.SentimentAnalyzerServiceStub sentimentAnalyzerStub;
     private final AlertServiceGrpc.AlertServiceStub alertServiceStub;
+    private final FeedbackCollectorServiceGrpc.FeedbackCollectorServiceStub feedbackCollectorStub;
 
     private JTextArea inputTextArea, resultArea;
-    private JButton analyzeButton, clearButton, loginButton;
+    private JButton analyzeButton, clearButton, loginButton, feedbackButton;
     private JPanel alertPanel, userPanel;
     private JLabel alertLabel, userLabel;
     private String currentUser;
@@ -36,7 +39,7 @@ public class SentimentAnalyzerUI extends JFrame {
 
     private final Object[][] POSITIVE_KEYWORDS = {
             {"good", 0.7f}, {"excellent", 0.9f}, {"great", 0.8f},
-            {"awesome", 0.9f}, {"perfect", 1.0f},
+            {"awesome", 0.9f}, {"perfect", 1.0f}, {"love", 0.9f}
     };
 
     public SentimentAnalyzerUI() {
@@ -47,6 +50,7 @@ public class SentimentAnalyzerUI extends JFrame {
                 .build();
         sentimentAnalyzerStub = SentimentAnalyzerServiceGrpc.newStub(channel);
         alertServiceStub = AlertServiceGrpc.newStub(channel);
+        feedbackCollectorStub = FeedbackCollectorServiceGrpc.newStub(channel);
 
         setTitle("Enhanced Sentiment Analysis Dashboard");
         setSize(700, 650);
@@ -87,6 +91,7 @@ public class SentimentAnalyzerUI extends JFrame {
 
         analyzeButton = new JButton("Analyze Text");
         clearButton = new JButton("Clear");
+        feedbackButton = new JButton("Show Feedback Summary");
 
         clearButton.addActionListener(e -> {
             inputTextArea.setText("");
@@ -133,12 +138,16 @@ public class SentimentAnalyzerUI extends JFrame {
             );
         });
 
+        feedbackButton.addActionListener(e -> submitFeedbacks());
+
         panel.add(new JLabel("Enter text to analyze:"));
         panel.add(new JScrollPane(inputTextArea));
         panel.add(Box.createVerticalStrut(10));
         panel.add(analyzeButton);
         panel.add(Box.createVerticalStrut(5));
         panel.add(clearButton);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(feedbackButton);
         panel.add(Box.createVerticalStrut(10));
         panel.add(new JLabel("Enhanced Analysis Result:"));
         panel.add(new JScrollPane(resultArea));
@@ -150,7 +159,7 @@ public class SentimentAnalyzerUI extends JFrame {
         alertPanel = new JPanel(new BorderLayout());
         alertPanel.setBorder(BorderFactory.createTitledBorder("Priority Alerts"));
         alertPanel.setBackground(Color.WHITE);
-        alertPanel.setPreferredSize(new Dimension(700, 150));
+        alertPanel.setPreferredSize(new Dimension(400, 150));
 
         alertLabel = new JLabel("No active alerts", SwingConstants.CENTER);
         alertLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -338,22 +347,20 @@ public class SentimentAnalyzerUI extends JFrame {
                 .setUserId(currentUser)
                 .build();
 
-        alertServiceStub.alertChannel(
-                new StreamObserver<AlertResponse>() {
-                    @Override
-                    public void onNext(AlertResponse response) {
-                        logger.info("Alert {} at {} for user {}", response.getStatus(), response.getTimestamp(), currentUser);
-                    }
+        alertServiceStub.alertChannel(new StreamObserver<AlertResponse>() {
+            @Override
+            public void onNext(AlertResponse response) {
+                logger.info("Alert {} at {} for user {}", response.getStatus(), response.getTimestamp(), currentUser);
+            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        logger.error("Failed to send alert", t);
-                    }
+            @Override
+            public void onError(Throwable t) {
+                logger.error("Failed to send alert", t);
+            }
 
-                    @Override
-                    public void onCompleted() {}
-                }
-        ).onNext(alertRequest);
+            @Override
+            public void onCompleted() {}
+        }).onNext(alertRequest);
     }
 
     private void saveTicketToHistory(int ticketId, String user, String sentiment, String message) {
@@ -367,6 +374,42 @@ public class SentimentAnalyzerUI extends JFrame {
         } catch (IOException e) {
             logger.warn("Failed to write ticket history", e);
         }
+    }
+
+    private void submitFeedbacks() {
+        CountDownLatch latch = new CountDownLatch(1);
+        StreamObserver<FeedbackRequest> requestObserver = feedbackCollectorStub.submitFeedbacks(new StreamObserver<FeedbackSummary>() {
+            @Override
+            public void onNext(FeedbackSummary summary) {
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(SentimentAnalyzerUI.this,
+                            String.format("Feedback Summary:\n\nTotal: %d\nPositive: %d\nNegative: %d\nAvg Score: %.2f",
+                                    summary.getTotalFeedbacks(),
+                                    summary.getPositiveCount(),
+                                    summary.getNegativeCount(),
+                                    summary.getAverageSentimentScore()),
+                            "Feedback Summary",
+                            JOptionPane.INFORMATION_MESSAGE);
+                });
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                logger.error("Failed to get feedback summary", t);
+                latch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+
+        // Simulated feedbacks
+        requestObserver.onNext(FeedbackRequest.newBuilder().setFeedbackText("I love this service").build());
+        requestObserver.onNext(FeedbackRequest.newBuilder().setFeedbackText("It was terrible today").build());
+        requestObserver.onNext(FeedbackRequest.newBuilder().setFeedbackText("Pretty average experience").build());
+        requestObserver.onCompleted();
     }
 
     public static void main(String[] args) {
