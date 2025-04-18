@@ -178,8 +178,7 @@ public final class SentimentAnalyzerServiceGrpc {
           getChannel().newCall(getAnalyzeTextMethod(), getCallOptions()), request, responseObserver);
     }
 
-    /**
-     */
+
     public void streamLiveSentiment(sentimentanalyzer.TextRequest request,
         io.grpc.stub.StreamObserver<sentimentanalyzer.SentimentResponse> responseObserver) {
       asyncServerStreamingCall(
@@ -187,8 +186,7 @@ public final class SentimentAnalyzerServiceGrpc {
     }
   }
 
-  /**
-   */
+
   public static final class SentimentAnalyzerServiceBlockingStub extends io.grpc.stub.AbstractStub<SentimentAnalyzerServiceBlockingStub> {
     private SentimentAnalyzerServiceBlockingStub(io.grpc.Channel channel) {
       super(channel);
@@ -205,15 +203,13 @@ public final class SentimentAnalyzerServiceGrpc {
       return new SentimentAnalyzerServiceBlockingStub(channel, callOptions);
     }
 
-    /**
-     */
+
     public sentimentanalyzer.SentimentResponse analyzeText(sentimentanalyzer.TextRequest request) {
       return blockingUnaryCall(
           getChannel(), getAnalyzeTextMethod(), getCallOptions(), request);
     }
 
-    /**
-     */
+
     public java.util.Iterator<sentimentanalyzer.SentimentResponse> streamLiveSentiment(
         sentimentanalyzer.TextRequest request) {
       return blockingServerStreamingCall(

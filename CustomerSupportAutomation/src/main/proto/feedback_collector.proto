@@ -10,13 +10,13 @@ option java_package = "sentimentanalyzer";
 option java_multiple_files = true;
 option java_outer_classname = "FeedbackCollectorProto";
 
-// Mensagem contendo o feedback individual
+// Message containing individual feedback
 message FeedbackRequest {
   string feedback_text = 1;
   string api_key = 2;
 }
 
-// Resumo do feedback com estatísticas
+// Feedback summary with statistics
 message FeedbackSummary {
   int32 total_feedbacks = 1;
   float average_sentiment_score = 2;
@@ -24,11 +24,11 @@ message FeedbackSummary {
   int32 positive_count = 4;
 }
 
-// Serviço para coletar feedbacks e gerar/resetar resumo
+// Service to collect feedback and generate/reset summary
 service FeedbackCollectorService {
-  // Recebe múltiplos feedbacks via streaming e retorna um resumo
+  // Receives multiple feedbacks via streaming and returns a summary
   rpc SubmitFeedbacks (stream FeedbackRequest) returns (FeedbackSummary);
 
-  // Reseta o resumo armazenado no servidor
+  // Resets the summary stored on the server
   rpc ResetFeedbacks (google.protobuf.Empty) returns (google.protobuf.BoolValue);
 }

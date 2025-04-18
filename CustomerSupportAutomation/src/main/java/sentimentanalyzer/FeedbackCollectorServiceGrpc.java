@@ -17,7 +17,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
  * <pre>
- * Serviço para coletar feedbacks e gerar/resetar resumo
+ * Service to collect feedback and generate/reset summary
  * </pre>
  */
 @javax.annotation.Generated(
@@ -119,14 +119,14 @@ public final class FeedbackCollectorServiceGrpc {
 
   /**
    * <pre>
-   * Serviço para coletar feedbacks e gerar/resetar resumo
+   * ervice to collect feedback and generate/reset summary
    * </pre>
    */
   public static abstract class FeedbackCollectorServiceImplBase implements io.grpc.BindableService {
 
     /**
      * <pre>
-     * Recebe múltiplos feedbacks via streaming e retorna um resumo
+     * Receives multiple feedbacks via streaming and returns a summary
      * </pre>
      */
     public io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackRequest> submitFeedbacks(
@@ -136,7 +136,7 @@ public final class FeedbackCollectorServiceGrpc {
 
     /**
      * <pre>
-     * Reseta o resumo armazenado no servidor
+     * Resets the summary stored on the server
      * </pre>
      */
     public void resetFeedbacks(com.google.protobuf.Empty request,
@@ -166,7 +166,7 @@ public final class FeedbackCollectorServiceGrpc {
 
   /**
    * <pre>
-   * Serviço para coletar feedbacks e gerar/resetar resumo
+   * Service to collect feedback and generate/reset summary
    * </pre>
    */
   public static final class FeedbackCollectorServiceStub extends io.grpc.stub.AbstractStub<FeedbackCollectorServiceStub> {
@@ -187,7 +187,7 @@ public final class FeedbackCollectorServiceGrpc {
 
     /**
      * <pre>
-     * Recebe múltiplos feedbacks via streaming e retorna um resumo
+     * Receives multiple feedbacks via streaming and returns a summary
      * </pre>
      */
     public io.grpc.stub.StreamObserver<sentimentanalyzer.FeedbackRequest> submitFeedbacks(
@@ -198,7 +198,7 @@ public final class FeedbackCollectorServiceGrpc {
 
     /**
      * <pre>
-     * Reseta o resumo armazenado no servidor
+     * Resets the summary stored on the server
      * </pre>
      */
     public void resetFeedbacks(com.google.protobuf.Empty request,
@@ -210,7 +210,7 @@ public final class FeedbackCollectorServiceGrpc {
 
   /**
    * <pre>
-   * Serviço para coletar feedbacks e gerar/resetar resumo
+   * Service to collect feedback and generate/reset summary
    * </pre>
    */
   public static final class FeedbackCollectorServiceBlockingStub extends io.grpc.stub.AbstractStub<FeedbackCollectorServiceBlockingStub> {
@@ -231,7 +231,7 @@ public final class FeedbackCollectorServiceGrpc {
 
     /**
      * <pre>
-     * Reseta o resumo armazenado no servidor
+     * Resets the summary stored on the server
      * </pre>
      */
     public com.google.protobuf.BoolValue resetFeedbacks(com.google.protobuf.Empty request) {
@@ -242,7 +242,7 @@ public final class FeedbackCollectorServiceGrpc {
 
   /**
    * <pre>
-   * Serviço para coletar feedbacks e gerar/resetar resumo
+   * Service to collect feedback and generate/reset summary
    * </pre>
    */
   public static final class FeedbackCollectorServiceFutureStub extends io.grpc.stub.AbstractStub<FeedbackCollectorServiceFutureStub> {
@@ -263,7 +263,7 @@ public final class FeedbackCollectorServiceGrpc {
 
     /**
      * <pre>
-     * Reseta o resumo armazenado no servidor
+     * Resets the summary stored on the server
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.BoolValue> resetFeedbacks(

@@ -109,7 +109,7 @@
                 </executions>
             </plugin>
 
-            <!-- Compilador Java -->
+            <!-- Java Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
